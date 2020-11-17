@@ -10,10 +10,32 @@
 			</li>
 			<li class="main-header__item">
 				<a
+					class="<%= typeof path !== 'undefined' && path === '/products' ? 'active': '' %>"
+					href="/products"
+					>Products</a
+				>
+			</li>
+			<li class="main-header__item">
+				<a
+					class="<%= typeof path !== 'undefined' && path === '/cart' ? 'active': '' %>"
+					href="/cart"
+					>Cart</a
+				>
+			</li>
+			<li class="main-header__item">
+				<a
 					class="<%= typeof path !== 'undefined' && path === '/admin/add-product' ? 'active': '' %>"
 					href="/admin/add-product"
 					class
 					>Add Product</a
+				>
+			</li>
+			<li class="main-header__item">
+				<a
+					class="<%= typeof path !== 'undefined' && path === '/admin/products' ? 'active': '' %>"
+					href="/admin/products"
+					class
+					>Admin Products</a
 				>
 			</li>
 		</ul>

@@ -1,3 +1,4 @@
+const { findById } = require('../models/product');
 const Product = require('../models/product');
 
 exports.getProducts = (req, res, next) => {
@@ -11,6 +12,13 @@ exports.getProducts = (req, res, next) => {
 			productCSS: true,
 		});
 	});
+};
+exports.getProduct = (req, res, next) => {
+	const prodId = req.params.productId;
+	findById(prodId, (product) => {
+		console.log(product);
+	});
+	res.redirect('/');
 };
 
 exports.getIndex = (req, res, next) => {

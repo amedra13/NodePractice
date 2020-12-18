@@ -102,13 +102,6 @@ exports.postCartProductDelete = (req, res, next) => {
 		})
 		.catch((err) => console.log(err));
 };
-exports.getOrders = (req, res, next) => {
-	res.render('shop/orders', {
-		path: '/orders',
-		pageTitle: 'Your Orders',
-	});
-};
-
 exports.getCheckout = (req, res, next) => {
 	res.render('shop/checkout', {
 		path: '/checkout',
@@ -128,7 +121,7 @@ exports.postOrder = (req, res, next) => {
 					return order.addProducts(
 						products.map((product) => {
 							product.orderItem = { quantity: product.cartItem.quantity };
-							return prodcut;
+							return product;
 						})
 					);
 				})
@@ -136,6 +129,18 @@ exports.postOrder = (req, res, next) => {
 					res.redirect('/orders');
 				})
 				.catch((err) => console.log(err));
+		})
+		.catch((err) => console.log(err));
+};
+exports.getOrders = (req, res, next) => {
+	req.user
+		.getOrders({ include: ['products'] })
+		.then((orders) => {
+			res.render('shop/orders', {
+				path: '/orders',
+				pageTitle: 'Your Orders',
+				orders: orders,
+			});
 		})
 		.catch((err) => console.log(err));
 };

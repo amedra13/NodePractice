@@ -2,17 +2,27 @@ const mongodb = require('mongodb');
 const getDb = require('../util/database').getDb;
 
 class Product {
-	constructor(title, price, description, imageUrl) {
+	constructor(title, price, description, imageUrl, id) {
 		this.title = title;
 		this.price = price;
 		this.description = description;
 		this.imageUrl = imageUrl;
+		this._id = id;
 	}
 	save() {
 		const db = getDb();
-		return db
-			.collection('products')
-			.insertOne(this)
+		let dbOp;
+		console.log(this._id);
+		if (this._id) {
+			console.log('INSIDE IF FUNCTION');
+			dbOp = db
+				.collection('products')
+				.updateOne({ _id: new mongodb.ObjectId(this.id) }, { $set: this });
+		} else {
+			console.log('INSIDE ELSE FUNCTION');
+			dbOp = db.collection('products').insertOne(this);
+		}
+		return dbOp
 			.then((result) => {
 				console.log(result);
 			})

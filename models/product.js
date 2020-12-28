@@ -12,14 +12,12 @@ class Product {
 	save() {
 		const db = getDb();
 		let dbOp;
-		console.log(this._id);
 		if (this._id) {
-			console.log('INSIDE IF FUNCTION');
+			// Update the product
 			dbOp = db
 				.collection('products')
-				.updateOne({ _id: new mongodb.ObjectId(this.id) }, { $set: this });
+				.updateOne({ _id: new mongodb.ObjectId(this._id) }, { $set: this });
 		} else {
-			console.log('INSIDE ELSE FUNCTION');
 			dbOp = db.collection('products').insertOne(this);
 		}
 		return dbOp

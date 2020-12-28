@@ -1,7 +1,4 @@
-const mongodb = require('mongodb');
 const Product = require('../models/product');
-
-const ObjectId = mongodb.ObjectId;
 
 exports.getAddProduct = (req, res, next) => {
 	res.render('admin/edit-product', {
@@ -46,14 +43,7 @@ exports.getEditProduct = (req, res, next) => {
 exports.postEditProduct = (req, res, next) => {
 	const { productId, title, imageUrl, price, description } = req.body;
 
-	const product = new Product(
-		title,
-		price,
-		description,
-		imageUrl,
-		new ObjectId(productId)
-	);
-	console.log('ENTERING PRODUCT VARIABLE!');
+	const product = new Product(title, price, description, imageUrl, productId);
 	product
 		.save()
 		.then((result) => {
@@ -75,15 +65,12 @@ exports.getProducts = (req, res, next) => {
 		.catch((err) => console.log(err));
 };
 
-// exports.postDeleteProduct = (req, res, next) => {
-// 	const { productId } = req.body;
-// 	Product.findByPk(productId)
-// 		.then((product) => {
-// 			return product.destroy();
-// 		})
-// 		.then((result) => {
-// 			console.log('PRODUCT WAS DELETED');
-// 			res.redirect('/admin/products');
-// 		})
-// 		.catch((err) => console.log(err));
-// };
+exports.postDeleteProduct = (req, res, next) => {
+	const { productId } = req.body;
+	Product.deleteById(productId)
+		.then((result) => {
+			console.log('PRODUCT WAS DELETED');
+			res.redirect('/admin/products');
+		})
+		.catch((err) => console.log(err));
+};

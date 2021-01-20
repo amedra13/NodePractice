@@ -21,7 +21,6 @@ const store = new MongodbStore({
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
-const { MongoDBStore } = require('connect-mongodb-session');
 
 app.get('/favicon.ico', (req, res) => res.status(204));
 

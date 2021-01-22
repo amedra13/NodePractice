@@ -13,10 +13,13 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.getSignup = (req, res, next) => {
+	let message = req.flash('error');
+	message = message.length > 0 ? message[0] : null;
 	res.render('auth/signup', {
 		path: '/signup',
 		pageTitle: 'Signup',
 		isAuthenticated: false,
+		errorMessage: message,
 	});
 };
 
@@ -49,8 +52,8 @@ exports.postSignup = (req, res, next) => {
 	const { email, password, confirmPassowrd } = req.body;
 	User.findOne({ email: email })
 		.then((userDoc) => {
-			console.log(userDoc);
 			if (userDoc) {
+				req.flash('error', 'E-mail exits already, please pick a different one');
 				return res.redirect('/signup');
 			}
 			return bcrypt.hash(password, 12).then((hashPassword) => {

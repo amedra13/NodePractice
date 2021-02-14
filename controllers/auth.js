@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport(
 );
 
 const crypto = require('crypto');
-const { validationResult } = require('express-validator/check');
+const { validationResult } = require('express-validator');
 
 exports.getLogin = (req, res, next) => {
 	let message = req.flash('error');

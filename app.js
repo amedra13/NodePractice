@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
+const multer = require('multer');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongodbStore = require('connect-mongodb-session')(session);
@@ -27,7 +28,6 @@ const authRoutes = require('./routes/auth');
 
 app.get('/favicon.ico', (req, res) => res.status(204));
 
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
 	session({
@@ -38,6 +38,15 @@ app.use(
 	})
 );
 app.use(csrfProtection);
+
+const fileStorage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, 'images');
+	},
+	filename: (req, file, cb) => {
+		cb(null, new Date().toISOString() + '-' + file.originalname);
+	},
+});
 app.use(flash());
 app.use((req, res, next) => {
 	res.locals.isAuthenticated = req.session.isLoggedIn;
@@ -64,13 +73,15 @@ app.use((req, res, next) => {
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(multer({ storage: fileStorage }).single('image'));
 
 app.use('/500', errorController.get500);
 app.use(errorController.get404);
 
 app.use((error, req, res, next) => {
 	// res.redirect('/500');
-	console.log(error);
+	// console.log(error);
 	res.status(500).render('500', {
 		pageTitle: 'Database Error!',
 		path: '/500',

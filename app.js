@@ -13,20 +13,44 @@ const User = require('./models/user');
 const MONGODB_URL =
 	'mongodb+srv://Andres:8Wijs9lpBV2HtrM9@cluster0.afspz.mongodb.net/shop';
 const app = express();
-app.set('view engine', 'ejs');
-app.set('views', 'views');
 
 const store = new MongodbStore({
 	uri: MONGODB_URL,
 	collection: 'sessions',
 });
 const csrfProtection = csrf();
+const fileStorage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, 'images');
+	},
+	filename: (req, file, cb) => {
+		cb(null, new Date().getTime() + '-' + file.originalname);
+	},
+});
+
+const fileFilter = (req, file, cb) => {
+	if (
+		file.mimetype === 'image/png' ||
+		file.mimetype === 'image/jpg' ||
+		file.mimetype === 'image/jpeg'
+	) {
+		cb(null, true);
+	} else {
+		cb(null, false);
+	}
+};
+
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
-app.get('/favicon.ico', (req, res) => res.status(204));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+	multer({ storage: fileStorage, fileFilter: fileFilter }).single('image')
+);
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(
@@ -38,16 +62,8 @@ app.use(
 	})
 );
 app.use(csrfProtection);
-
-const fileStorage = multer.diskStorage({
-	destination: (req, file, cb) => {
-		cb(null, 'images');
-	},
-	filename: (req, file, cb) => {
-		cb(null, new Date().toISOString() + '-' + file.originalname);
-	},
-});
 app.use(flash());
+
 app.use((req, res, next) => {
 	res.locals.isAuthenticated = req.session.isLoggedIn;
 	res.locals.csrfToken = req.csrfToken();
@@ -73,8 +89,6 @@ app.use((req, res, next) => {
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(multer({ storage: fileStorage }).single('image'));
 
 app.use('/500', errorController.get500);
 app.use(errorController.get404);

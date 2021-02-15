@@ -15,9 +15,25 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
 	const { title, price, description } = req.body;
-	const imageUrl = req.file;
-	console.log('this is image ==>', imageUrl);
+	const image = req.file;
+	console.log('this is image ==>', image);
+	if (!image) {
+		return res.status(422).render('admin/edit-product', {
+			pageTitle: 'Add Product',
+			path: '/admin/add-product',
+			editing: false,
+			hasErrors: true,
+			product: {
+				title: title,
+				price: price,
+				description: description,
+			},
+			errorMessage: 'Attached file is not an image',
+			validationErrors: [],
+		});
+	}
 	const errors = validationResult(req);
+
 	if (!errors.isEmpty()) {
 		return res.render('admin/edit-product', {
 			pageTitle: 'Add Product',
@@ -26,7 +42,6 @@ exports.postAddProduct = (req, res, next) => {
 			hasErrors: true,
 			product: {
 				title: title,
-				imageUrl: imageUrl,
 				price: price,
 				description: description,
 			},
@@ -34,6 +49,9 @@ exports.postAddProduct = (req, res, next) => {
 			validationErrors: errors.array(),
 		});
 	}
+
+	const imageUrl = image.path;
+
 	const product = new Product({
 		title: title,
 		price: price,
@@ -82,7 +100,8 @@ exports.getEditProduct = (req, res, next) => {
 		});
 };
 exports.postEditProduct = (req, res, next) => {
-	const { productId, title, imageUrl, price, description } = req.body;
+	const { productId, title, price, description } = req.body;
+	const image = req.file;
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
 		console.log(errors);
@@ -93,7 +112,6 @@ exports.postEditProduct = (req, res, next) => {
 			hasErrors: true,
 			product: {
 				title: title,
-				imageUrl: imageUrl,
 				price: price,
 				description: description,
 				_id: productId,
@@ -109,7 +127,9 @@ exports.postEditProduct = (req, res, next) => {
 				return res.redirect('/');
 			}
 			product.title = title;
-			product.imageUrl = imageUrl;
+			if (image) {
+				product.imageUrl = image.path;
+			}
 			product.price = price;
 			product.description = description;
 

@@ -96,7 +96,7 @@ app.use(errorController.get404);
 
 app.use((error, req, res, next) => {
 	// res.redirect('/500');
-	// console.log(error);
+	console.log(error);
 	res.status(500).render('500', {
 		pageTitle: 'Database Error!',
 		path: '/500',
@@ -105,7 +105,7 @@ app.use((error, req, res, next) => {
 });
 
 mongoose
-	.connect(MONGODB_URL)
+	.connect(MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true })
 	.then((result) => {
 		app.listen(3000);
 	})

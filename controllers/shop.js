@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const Product = require('../models/product');
 const Order = require('../models/order');
 
@@ -98,12 +100,12 @@ exports.postCartProductDelete = (req, res, next) => {
 			return next(error);
 		});
 };
-exports.getCheckout = (req, res, next) => {
-	res.render('shop/checkout', {
-		path: '/checkout',
-		pageTitle: 'Checkout',
-	});
-};
+// exports.getCheckout = (req, res, next) => {
+// 	res.render('shop/checkout', {
+// 		path: '/checkout',
+// 		pageTitle: 'Checkout',
+// 	});
+// };
 exports.postOrder = (req, res, next) => {
 	const productItems = req.user
 		.populate('cart.items.productId')
@@ -147,4 +149,18 @@ exports.getOrders = (req, res, next) => {
 			error.httpStatusCode = 500;
 			return next(error);
 		});
+};
+
+exports.getInvoice = (req, res, next) => {
+	const orderId = req.params.orderId;
+	const invoiceName = 'invoice-' + orderId + '.pdf';
+	console.log(invoiceName);
+	const invoicePath = path.join('data', 'invoices', invoiceName);
+	fs.readFile(invoicePath, (err, data) => {
+		if (err) {
+			return next(err);
+		}
+		console.log('This is the data ==>>', data);
+		res.send(data);
+	});
 };

@@ -188,13 +188,17 @@ exports.getInvoice = (req, res, next) => {
 			pdfDoc.fontSize(26).text('Invoice: ');
 			pdfDoc.text('-----------------------------------------');
 
+			let totalPrice = 0;
 			order.products.forEach((product) => {
+				totalPrice += product.quantity * product.product.price;
 				pdfDoc
-					.fontSize(16)
+					.fontSize(14)
 					.text(
 						`${product.product.title} - ${product.quantity}x, price: $ ${product.product.price}`
 					);
 			});
+			pdfDoc.text('------');
+			pdfDoc.fontSize(12).text(`Total: ${totalPrice}`);
 			pdfDoc.end();
 
 			// const file = fs.createReadStream(invoicePath);
